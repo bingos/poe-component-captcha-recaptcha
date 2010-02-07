@@ -6,7 +6,7 @@ version_from 'lib/POE/Component/Captcha/reCAPTCHA.pm';
 abstract_from 'lib/POE/Component/Captcha/reCAPTCHA.pm';
 readme_from 'lib/POE/Component/Captcha/reCAPTCHA.pm';
 license 'perl';
-auto_license holder => 'Chris Williams';
+auto_license holder => 'Chris Williams and Andy Armstrong';
 perl_version '5.006';
 build_requires 'Test::More' => 0.47;
 requires 'Captcha::reCAPTCHA' => 0.92;

@@ -3,6 +3,45 @@ NAME
     reCAPTCHA API
 
 SYNOPSIS
+     # Create a reCAPTCHA component
+
+     my $poco = POE::Component::Captcha::reCAPTCHA->spawn( alias => 'recaptcha' );
+
+     # Start your own sessions etc.
+
+     # When you need to check a captcha.
+
+     my %opts = (
+                  event       => 'recaptcha',
+                  privatekey  => 'your private key here',
+                  remoteip    => $ENV{'REMOTE_ADDR'},
+                  challenge   => $challenge,
+                  response    => $response,
+                  _arbitary   => 'some stuff',
+     );
+
+     $poe_kernel->post( 
+                        'recaptcha', 
+                        'check_answer', 
+                        \%opts
+     );
+
+     # And define an event handler for it
+
+     sub recaptcha {
+        my ($kernel,$result) = @_[KERNEL,ARG0];
+    
+        if ( $result->{is_valid} ) {
+            print "Yes!";
+        }
+        else {
+            # Error
+            print $result->{error};
+        }
+
+        return;
+     }
+
 DESCRIPTION
     POE::Component::Captcha::reCAPTCHA is a POE implementation of
     Captcha::reCAPTCHA. It provides access to various Captcha::reCAPTCHA
@@ -12,6 +51,9 @@ DESCRIPTION
 CONSTRUCTOR
     "spawn"
         Creates a new POE::Component::Captcha::reCAPTCHA session.
+
+        Takes one optional argument "alias" so you can set an alias on the
+        component to send it events later.
 
         Returns an object reference which the following methods can be used
         on.
@@ -134,11 +176,4 @@ SEE ALSO
     Captcha::reCAPTCHA
 
     <http://recaptcha.net/learnmore.html>
-
-POD ERRORS
-    Hey! The above document had some coding errors, which are explained
-    below:
-
-    Around line 340:
-        =back without =over
 
