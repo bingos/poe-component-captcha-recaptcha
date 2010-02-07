@@ -226,25 +226,136 @@ Returns an object reference which the following methods can be used on.
 
 =item C<session_id>
 
+Takes no arguments. Returns the L<POE::Session> ID of the component.
+
 =item C<shutdown>
+
+Takes no arguments. Terminates the component. 
+
+=item C<check_answer>
+
+After the user has filled out the HTML form, including their answer for the CAPTCHA, use 
+C<check_answer> to check their answer when they submit the form. The user's answer will be in 
+two form fields, C<recaptcha_challenge_field> and C<recaptcha_response_field>. 
+The component will make an HTTP request to the reCAPTCHA server and verify the user's answer.
+
+Requires a C<HASHREF> as an argument with the following keys, all of which are required:
+
+=over
+
+=item C<event>
+
+The name of the C<event> that should be sent to the requesting session with the reply from
+the reCAPTCHA server.
+
+=item C<privatekey>
+
+Your reCAPTCHA private key, from the API Signup Page.
+
+=item C<remoteip>
+
+The user's IP address, in the format 192.168.0.1.
+
+=item C<challenge>
+
+The value of the form field recaptcha_challenge_field
+
+=item C<response>
+
+The value of the form field recaptcha_response_field.
+
+=back 
+
+See C<OUTPUT EVENTS> below for what will be sent to your session in reply.
+
+=back
+
+These methods are directly equivalent to their L<Captcha::reCAPTCHA> counterparts.
+( in fact they merely map to an instance of L<Captcha::reCAPTCHA> that the component
+creates internally ). See L<Captcha::reCAPTCHA> for more details.
+
+=over
 
 =item C<get_html>
 
+Generates HTML to display the captcha.
+
 =item C<get_options_setter>
 
-=item C<check_answer>
+Enables customisation of look of the reCAPTCHA widget with some JavaScript settings.
 
 =back
 
 =head1 INPUT EVENTS
 
+These are POE events that the component will accept.
+
 =over
 
+=item C<shutdown>
+
+Takes no arguments. Terminates the component. 
+
 =item C<check_answer>
+
+After the user has filled out the HTML form, including their answer for the CAPTCHA, use 
+C<check_answer> to check their answer when they submit the form. The user's answer will be in 
+two form fields, C<recaptcha_challenge_field> and C<recaptcha_response_field>. 
+The component will make an HTTP request to the reCAPTCHA server and verify the user's answer.
+
+Requires a C<HASHREF> as an argument with the following keys, all of which are required:
+
+=over
+
+=item C<event>
+
+The name of the C<event> that should be sent to the requesting session with the reply from
+the reCAPTCHA server.
+
+=item C<privatekey>
+
+Your reCAPTCHA private key, from the API Signup Page.
+
+=item C<remoteip>
+
+The user's IP address, in the format 192.168.0.1.
+
+=item C<challenge>
+
+The value of the form field recaptcha_challenge_field
+
+=item C<response>
+
+The value of the form field recaptcha_response_field.
+
+=back 
+
+See C<OUTPUT EVENTS> below for what will be sent to your session in reply.
+
+You may also set arbitary keys to pass arbitary data along with your request. These must be
+prefixed with an underscore C<_>. 
 
 =back
 
 =head1 OUTPUT EVENTS
+
+The component will send an event in response to C<check_answer>. C<ARG0> of the event will be
+a C<HASHREF> containing the key/values of the original request ( including any arbitary key/values passed ).
+
+In addition the C<is_valid> and C<error> keys will indicate the status of the request to the reCAPTCHA server:
+
+=over
+
+=item C<is_valid>
+
+If this is set to a true value then the request was successful and the challenge and response sent were
+valid.
+
+=item C<error>
+
+If this is set then an error occurred.
+
+=back
 
 =head1 AUTHOR
 

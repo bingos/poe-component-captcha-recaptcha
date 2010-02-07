@@ -1,0 +1,144 @@
+NAME
+    POE::Component::Captcha::reCAPTCHA - A POE implementation of the
+    reCAPTCHA API
+
+SYNOPSIS
+DESCRIPTION
+    POE::Component::Captcha::reCAPTCHA is a POE implementation of
+    Captcha::reCAPTCHA. It provides access to various Captcha::reCAPTCHA
+    methods and a non-blocking mechanism for checking the answer provided by
+    users.
+
+CONSTRUCTOR
+    "spawn"
+        Creates a new POE::Component::Captcha::reCAPTCHA session.
+
+        Returns an object reference which the following methods can be used
+        on.
+
+METHODS
+    "session_id"
+        Takes no arguments. Returns the POE::Session ID of the component.
+
+    "shutdown"
+        Takes no arguments. Terminates the component.
+
+    "check_answer"
+        After the user has filled out the HTML form, including their answer
+        for the CAPTCHA, use "check_answer" to check their answer when they
+        submit the form. The user's answer will be in two form fields,
+        "recaptcha_challenge_field" and "recaptcha_response_field". The
+        component will make an HTTP request to the reCAPTCHA server and
+        verify the user's answer.
+
+        Requires a "HASHREF" as an argument with the following keys, all of
+        which are required:
+
+        "event"
+            The name of the "event" that should be sent to the requesting
+            session with the reply from the reCAPTCHA server.
+
+        "privatekey"
+            Your reCAPTCHA private key, from the API Signup Page.
+
+        "remoteip"
+            The user's IP address, in the format 192.168.0.1.
+
+        "challenge"
+            The value of the form field recaptcha_challenge_field
+
+        "response"
+            The value of the form field recaptcha_response_field.
+
+        See "OUTPUT EVENTS" below for what will be sent to your session in
+        reply.
+
+    These methods are directly equivalent to their Captcha::reCAPTCHA
+    counterparts. ( in fact they merely map to an instance of
+    Captcha::reCAPTCHA that the component creates internally ). See
+    Captcha::reCAPTCHA for more details.
+
+    "get_html"
+        Generates HTML to display the captcha.
+
+    "get_options_setter"
+        Enables customisation of look of the reCAPTCHA widget with some
+        JavaScript settings.
+
+INPUT EVENTS
+    These are POE events that the component will accept.
+
+    "shutdown"
+        Takes no arguments. Terminates the component.
+
+    "check_answer"
+        After the user has filled out the HTML form, including their answer
+        for the CAPTCHA, use "check_answer" to check their answer when they
+        submit the form. The user's answer will be in two form fields,
+        "recaptcha_challenge_field" and "recaptcha_response_field". The
+        component will make an HTTP request to the reCAPTCHA server and
+        verify the user's answer.
+
+        Requires a "HASHREF" as an argument with the following keys, all of
+        which are required:
+
+        "event"
+            The name of the "event" that should be sent to the requesting
+            session with the reply from the reCAPTCHA server.
+
+        "privatekey"
+            Your reCAPTCHA private key, from the API Signup Page.
+
+        "remoteip"
+            The user's IP address, in the format 192.168.0.1.
+
+        "challenge"
+            The value of the form field recaptcha_challenge_field
+
+        "response"
+            The value of the form field recaptcha_response_field.
+
+        See "OUTPUT EVENTS" below for what will be sent to your session in
+        reply.
+
+        You may also set arbitary keys to pass arbitary data along with your
+        request. These must be prefixed with an underscore "_".
+
+OUTPUT EVENTS
+    The component will send an event in response to "check_answer". "ARG0"
+    of the event will be a "HASHREF" containing the key/values of the
+    original request ( including any arbitary key/values passed ).
+
+    In addition the "is_valid" and "error" keys will indicate the status of
+    the request to the reCAPTCHA server:
+
+    "is_valid"
+        If this is set to a true value then the request was successful and
+        the challenge and response sent were valid.
+
+    "error"
+        If this is set then an error occurred.
+
+AUTHOR
+    Chris "BinGOs" Williams <chris@bingosnet.co.uk>
+
+    Based on code from Captcha::reCAPTCHA by Andy Armstrong.
+
+LICENSE
+    Copyright © Chris Williams and Andy Armstrong
+
+    This module is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+SEE ALSO
+    Captcha::reCAPTCHA
+
+    <http://recaptcha.net/learnmore.html>
+
+POD ERRORS
+    Hey! The above document had some coding errors, which are explained
+    below:
+
+    Around line 340:
+        =back without =over
+
