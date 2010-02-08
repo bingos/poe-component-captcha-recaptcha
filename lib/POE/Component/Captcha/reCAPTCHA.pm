@@ -8,6 +8,8 @@ use HTTP::Request::Common;
 use Captcha::reCAPTCHA;
 use vars qw($VERSION);
 
+$VERSION = '0.02';
+
 use constant API_VERIFY_SERVER => 'http://api-verify.recaptcha.net';
 use constant SERVER_ERROR      => 'recaptcha-not-reachable';
 
