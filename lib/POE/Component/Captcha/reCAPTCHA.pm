@@ -1,14 +1,13 @@
 package POE::Component::Captcha::reCAPTCHA;
 
+#ABSTRACT: A POE implementation of the reCAPTCHA API
+
 use strict;
 use warnings;
 use Carp;
 use POE qw(Component::Client::HTTP);
 use HTTP::Request::Common;
 use Captcha::reCAPTCHA;
-use vars qw($VERSION);
-
-$VERSION = '0.02';
 
 use constant API_VERIFY_SERVER => 'http://api-verify.recaptcha.net';
 use constant SERVER_ERROR      => 'recaptcha-not-reachable';
@@ -38,7 +37,7 @@ sub spawn {
   my $self = bless \%opts, $package;
   $self->{session_id} = POE::Session->create(
   object_states => [
-     $self => { shutdown     => '_shutdown', 
+     $self => { shutdown     => '_shutdown',
                 check_answer => '_check_answer',
      },
      $self => [ qw(_start _check_answer _dispatch _http_request _http_response) ],
@@ -65,7 +64,7 @@ sub _start {
   $self->{session_id} = $_[SESSION]->ID();
   if ( $self->{alias} ) {
      $kernel->alias_set( $self->{alias} );
-  } 
+  }
   else {
      $kernel->refcount_increment( $self->{session_id} => __PACKAGE__ );
   }
@@ -135,9 +134,9 @@ sub _check_answer {
 
 sub _http_request {
   my ($kernel,$self,$req) = @_[KERNEL,OBJECT,ARG0];
-  
+
   unless ( $req->{challenge} and $req->{response} ) {
-    $req->{is_valid} = 0; 
+    $req->{is_valid} = 0;
     $req->{error} = 'incorrect-captcha-sol';
     $kernel->yield( '_dispatch', $req );
     return;
@@ -149,10 +148,10 @@ sub _http_request {
 
   my $id = _allocate_identifier();
 
-  $kernel->post( 
-    $self->{_httpc}, 
-    'request', 
-    '_http_response', 
+  $kernel->post(
+    $self->{_httpc},
+    'request',
+    '_http_response',
     POST( API_VERIFY_SERVER . '/verify', \%postargs ),
     "$id",
   );
@@ -191,16 +190,12 @@ sub _dispatch {
   my $event = delete $input->{event};
   $kernel->post( $session, $event, $input );
   $kernel->refcount_decrement( $session => __PACKAGE__ );
-  return;  
+  return;
 }
 
 qq[CAPTCH!];
 
-__END__
-
-=head1 NAME
-
-POE::Component::Captcha::reCAPTCHA - A POE implementation of the reCAPTCHA API
+=pod
 
 =head1 SYNOPSIS
 
@@ -231,7 +226,7 @@ POE::Component::Captcha::reCAPTCHA - A POE implementation of the reCAPTCHA API
 
  sub recaptcha {
     my ($kernel,$result) = @_[KERNEL,ARG0];
-    
+
     if ( $result->{is_valid} ) {
         print "Yes!";
     }
@@ -274,13 +269,13 @@ Takes no arguments. Returns the L<POE::Session> ID of the component.
 
 =item C<shutdown>
 
-Takes no arguments. Terminates the component. 
+Takes no arguments. Terminates the component.
 
 =item C<check_answer>
 
-After the user has filled out the HTML form, including their answer for the CAPTCHA, use 
-C<check_answer> to check their answer when they submit the form. The user's answer will be in 
-two form fields, C<recaptcha_challenge_field> and C<recaptcha_response_field>. 
+After the user has filled out the HTML form, including their answer for the CAPTCHA, use
+C<check_answer> to check their answer when they submit the form. The user's answer will be in
+two form fields, C<recaptcha_challenge_field> and C<recaptcha_response_field>.
 The component will make an HTTP request to the reCAPTCHA server and verify the user's answer.
 
 Requires a C<HASHREF> as an argument with the following keys, all of which are required:
@@ -308,7 +303,7 @@ The value of the form field recaptcha_challenge_field
 
 The value of the form field recaptcha_response_field.
 
-=back 
+=back
 
 See C<OUTPUT EVENTS> below for what will be sent to your session in reply.
 
@@ -338,13 +333,13 @@ These are POE events that the component will accept.
 
 =item C<shutdown>
 
-Takes no arguments. Terminates the component. 
+Takes no arguments. Terminates the component.
 
 =item C<check_answer>
 
-After the user has filled out the HTML form, including their answer for the CAPTCHA, use 
-C<check_answer> to check their answer when they submit the form. The user's answer will be in 
-two form fields, C<recaptcha_challenge_field> and C<recaptcha_response_field>. 
+After the user has filled out the HTML form, including their answer for the CAPTCHA, use
+C<check_answer> to check their answer when they submit the form. The user's answer will be in
+two form fields, C<recaptcha_challenge_field> and C<recaptcha_response_field>.
 The component will make an HTTP request to the reCAPTCHA server and verify the user's answer.
 
 Requires a C<HASHREF> as an argument with the following keys, all of which are required:
@@ -372,12 +367,12 @@ The value of the form field recaptcha_challenge_field
 
 The value of the form field recaptcha_response_field.
 
-=back 
+=back
 
 See C<OUTPUT EVENTS> below for what will be sent to your session in reply.
 
 You may also set arbitary keys to pass arbitary data along with your request. These must be
-prefixed with an underscore C<_>. 
+prefixed with an underscore C<_>.
 
 =back
 
@@ -400,18 +395,6 @@ valid.
 If this is set then an error occurred.
 
 =back
-
-=head1 AUTHOR
-
-Chris C<BinGOs> Williams <chris@bingosnet.co.uk>
-
-Based on code from L<Captcha::reCAPTCHA> by Andy Armstrong.
-
-=head1 LICENSE
-
-Copyright E<copy> Chris Williams and Andy Armstrong
-
-This module is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
